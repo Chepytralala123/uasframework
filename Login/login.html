@@ -52,8 +52,19 @@
 						<button type="submit"  class="btn float-right login_btn">Masuk</button>
 					</div>
 				</form>
- 
-                <button onclick="logout()" class="btn btn-danger" id="logout-button" style="display: none;">Logout</button>
+
+                <a class="btn btn-danger" href="#" onclick="logout()" id="logout-button">
+                                    Logout
+                                </a>
+                                <script>
+                                    function logout() {
+                                        localStorage.removeItem('access');
+                                        localStorage.removeItem('refresh');
+                                        window.location.href = 'login.html';
+                                    }
+                                </script>
+
+                <button onclick="logout()" class="btn btn-danger"  style="display: none;">Logout</button>
 			</div>
 			<div class="card-footer">
 				<div class="d-flex justify-content-center links">
