@@ -1,0 +1,143 @@
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+ 
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login Page</title>
+   <!--Made with love by Mutiullah Samim -->
+ 
+	<!--Bootsrap 4 CDN-->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+ 
+    <!--Fontawesome CDN-->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+ 
+	<!--Custom styles-->
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<div class="container">
+	<div class="d-flex justify-content-center h-100">
+		<div class="card">
+			<div class="card-header">
+				<h3>Sign In</h3>
+				<div class="d-flex justify-content-end social_icon">
+					<span><i class="fab fa-facebook-square"></i></span>
+					<span><i class="fab fa-google-plus-square"></i></span>
+					<span><i class="fab fa-twitter-square"></i></span>
+				</div>
+			</div>
+			<div class="card-body">
+				<form id="login-form">
+					<div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-user"></i></span>
+						</div>
+						<input type="text" id="username" name="username" class="form-control" placeholder="username">
+ 
+					</div>
+					<div class="input-group form-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text"><i class="fas fa-key"></i></span>
+						</div>
+						<input type="password" id="password" name="password" class="form-control" placeholder="password">
+					</div>
+					<div class="row align-items-center remember">
+						<input type="checkbox">Remember Me
+					</div>
+					<div class="form-group">
+						<button type="submit"  class="btn float-right login_btn">Masuk</button>
+					</div>
+				</form>
+ 
+                <button onclick="logout()" class="btn btn-danger" id="logout-button" style="display: none;">Logout</button>
+			</div>
+			<div class="card-footer">
+				<div class="d-flex justify-content-center links">
+					tidak punya akun?<a href="#">Sign Up</a>
+				</div>
+				<div class="d-flex justify-content-center">
+					<a href="#">Forgot your password?</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+ 
+<script>
+    $(document).ready(function() {
+  // Cek apakah ada token akses di localStorage
+  if (localStorage.getItem('access')) {
+    // Jika ada, sembunyikan form login dan tampilkan tombol logout
+    $('#login-form').hide();
+    $('#logout-button').show();
+    // Langsung redirect ke dashboard
+    // window.location.href = 'dashboard_admin.html';
+  }
+
+  // Handle submit form login
+  $('#login-form').on('submit', function(e) {
+    e.preventDefault();
+
+    $.ajax({
+      type: 'POST',
+      url: 'http://127.0.0.1:8000/api/login/', // Ganti dengan URL API login Anda
+      data: {
+        username: $('#username').val(),
+        password: $('#password').val()
+      },
+      success: function(response) {
+        // Simpan token akses dan refresh di localStorage
+        localStorage.setItem('access', response.access);
+        localStorage.setItem('refresh', response.refresh);
+
+        // Decode token JWT
+        const token = localStorage.getItem('access');
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        const payload = JSON.parse(jsonPayload);
+
+		const {isadmin, ismanager, iskasir} = payload;
+
+        // Tampilkan pesan sukses dan redirect ke dashboard yang sesuai
+        if (isadmin) {
+			console.log('isadmin');
+          window.location.href = 'dashboard_admin.html';
+        } else if (ismanager) {
+			console.log('dashboard_manager');
+          window.location.href = 'dashboard_manager.html';
+        } else if (iskasir) {
+			console.log('dashboard_kasir');
+          window.location.href = 'dashboard_kasir.html';
+        }
+		console.log(isadmin, ismanager, iskasir)
+        // Tampilkan pesan sukses dan redirect ke dashboard
+        // alert('Login berhasil!');
+        // window.location.href = 'dashboard_admin.html';
+      },
+      error: function(response) {
+        // Tampilkan pesan error yang lebih informatif
+        alert('Login gagal. Silahkan periksa username dan password Anda.');
+      }
+    });
+  });
+
+  // Fungsi logout
+  function logout() {
+    localStorage.removeItem('access');
+    localStorage.removeItem('refresh');
+    $('#login-form').show();
+    $('#logout-button').hide();
+  }
+});
+</script>
+ 
+</body>
+</html>
