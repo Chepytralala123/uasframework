@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
 class BarangSerializer(serializers.ModelSerializer):
     class Meta:
         model = Barang
-        fields = ['nama_produk', 'harga', 'deskripsi', 'stok']
+        fields = ['id', 'nama_produk', 'harga', 'deskripsi', 'stok']
 
 # Serializer for Penjualan model
 class PenjualanSerializer(serializers.ModelSerializer):

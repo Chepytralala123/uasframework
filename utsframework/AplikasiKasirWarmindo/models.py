@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth.models import AbstractUser, PermissionsMixin
 from django.db import models
 # from django.utils.translation import gettext_lazy as _
@@ -12,11 +13,11 @@ class User(AbstractUser, PermissionsMixin):
 
 
 class Barang(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     nama_produk = models.CharField(max_length=100)
     harga = models.DecimalField(max_digits=10, decimal_places=2)
     deskripsi = models.TextField()
     stok = models.PositiveIntegerField()
-
 
 class Penjualan(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
